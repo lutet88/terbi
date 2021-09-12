@@ -1,0 +1,15 @@
+.dub
+docs.json
+__dummy.html
+docs/
+/terbi
+terbi.so
+terbi.dylib
+terbi.dll
+terbi.a
+terbi.lib
+terbi-test-*
+*.exe
+*.o
+*.obj
+*.lst

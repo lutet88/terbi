@@ -1,0 +1,12 @@
+{
+	"authors": [
+		"lutet"
+	],
+	"copyright": "lutet 2021",
+	"dependencies": {
+		"dray": ">=3.5.0-r4 <3.6.0-0"
+	},
+	"description": "a minimal rhythm game engine in raylib/D",
+	"license": "Apache 2.0",
+	"name": "terbi"
+}

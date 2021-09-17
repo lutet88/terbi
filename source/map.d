@@ -1,6 +1,7 @@
 module terbi.map;
 
 import std.stdio;
+import std.conv;
 import raylib;
 
 import terbi.enums;
@@ -21,18 +22,19 @@ struct TimingPoint {
 }
 
 struct Difficulty {
-    float hpDrain = 7.5;
+    // all values from [0,10], like osu
+    double hpDrain = 7.5;
     int keys = 4;
-    float circleSize = 7.5;
-    float accuracy = 7.5;
-    float approachRate = 7.5;
-    float sliderSpeed = 7.5;
-    float sliderTickRate = 7.5;
+    double circleSize = 7.5;
+    double accuracy = 7.5;
+    double approachRate = 7.5;
+    double sliderSpeed = 7.5;
+    double sliderTickRate = 7.5;
 }
 
 struct Source {
     string source;
-    string ID;
+    string id;
     SourceLocation location;
 }
 
@@ -46,10 +48,16 @@ struct Metadata {
     Source source;
 }
 
-class Map {
-    Sound audioclip;
+struct General {
+    Music audioClip;
+    bool initialized = false;
     int leadInMilliseconds = 0;
     int previewMilliseconds = 1000;
+}
+
+class Map {
+    General general;
+    int mode;
 
     Difficulty difficulty;
     Metadata metadata;
@@ -57,25 +65,15 @@ class Map {
     TimingPoint[] timingPoints;
     HitObject[] hitObjects;
 
-    this(Sound audioclip, TimingPoint[] timingPoints, HitObject[] hitObjects) {
-        this.audioclip = audioclip;
-        this.timingPoints = timingPoints;
-        this.hitObjects = hitObjects;
+    this() {
     }
 
-    void setLeadIn(int ms){
-        this.leadInMilliseconds = ms;
-    }
-
-    void setPreview(int ms){
-        this.previewMilliseconds = ms;
-    }
-
-    void setDifficulty(Difficulty diff){
-        this.difficulty = diff;
-    }
-
-    void setMetadata(Metadata meta){
-        this.metadata = meta;
+    override string toString(){
+        string header = "terbi map object at " ~ to!string(this.toHash()) ~ "\n";
+        string general = "general data: " ~ to!string(general) ~ "\n";
+        string metadata = "metadata: " ~ to!string(metadata) ~ "\n";
+        string difficulty = "difficulty: " ~ to!string(difficulty) ~ "\n";
+        string stats = "hitobjects: " ~ to!string(hitObjects.length) ~ " timingpoints: " ~ to!string(timingPoints.length);
+        return header ~ general ~ metadata ~ difficulty ~ stats;
     }
 }

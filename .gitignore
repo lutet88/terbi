@@ -13,3 +13,6 @@ terbi-test-*
 *.o
 *.obj
 *.lst
+maps/
+testmap/
+tests/

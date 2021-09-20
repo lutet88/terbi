@@ -13,6 +13,7 @@ import raylib;
 import terbi.map;
 import terbi.enums;
 
+
 Map parseFile(string fileName, string outerPath) {
     auto data = cast(string) read(outerPath ~ fileName);
     auto lines = data.split("\n");
@@ -36,6 +37,11 @@ class Parser {
 }
 
 class OsuParser : Parser {
+    /* This parser is designed to parse .osu file formats
+    ** See https://osu.ppy.sh/wiki/en/osu%21_File_Formats/Osu_%28file_format%29
+    ** Verified to work with v12, v13, v14 files.
+    */
+
     enum Section : string {
         general = "[General]",
         editor = "[Editor]",
@@ -64,7 +70,10 @@ class OsuParser : Parser {
         }
 
         void parse (string[] lines, string outerPath) {
+            // initialize currentSection, assuming [General] always comes first
             Section currentSection = Section.general;
+
+            // for each line in the .osu file:
             for (int i = 0; i < lines.length; i++){
                 // match if there is a new section
                 foreach (section; EnumMembers!Section) {
@@ -72,12 +81,20 @@ class OsuParser : Parser {
                         currentSection = section;
                     }
                 }
-                // depending on section, edit map
+
+                // depending on current section, edit map
                 switch (currentSection) {
                     case Section.general:
+                        // split the line by separator
                         auto parts = lines[i].split(":");
+
+                        // if there are 1 or less parts, assume invalid
                         if (parts.length <= 1) { continue; }
+
+                        // create value variable, since all outcomes use parts[1]
                         auto value = strip(parts[1]);
+
+                        // match parts[0] as key, assign values to the Map
                         switch (parts[0]) {
                             case "AudioFilename":
                                 map.general.audioClip = LoadMusicStream(
@@ -104,9 +121,16 @@ class OsuParser : Parser {
                         break;
 
                     case Section.metadata:
+                        // split the line by separator
                         auto parts = lines[i].split(":");
+
+                        // if there are 1 or less parts, assume invalid
                         if (parts.length <= 1) { continue; }
+
+                        // create value variable, since all outcomes use parts[1]
                         auto value = strip(parts[1]);
+
+                        // match parts[0] as key, assign values to the Map
                         switch (parts[0]) {
                             case "Title":
                                 map.metadata.title = value;
@@ -139,9 +163,16 @@ class OsuParser : Parser {
                         break;
 
                     case Section.difficulty:
+                        // split the line by separator
                         auto parts = lines[i].split(":");
+
+                        // if there are 1 or less parts, assume invalid
                         if (parts.length <= 1) { continue; }
+
+                        // create value variable, since all outcomes use parts[1]
                         auto value = strip(parts[1]);
+
+                        // match parts[0] as key, assign values to the Map
                         switch (parts[0]) {
                             case "HPDrainRate":
                                 map.difficulty.hpDrain = to!double(value);
@@ -172,18 +203,25 @@ class OsuParser : Parser {
                         break;
 
                     case Section.timingPoints:
+                        // split the line by separator
                         auto parts = lines[i].split(",");
+
                         if (parts.length != 8) {
                             writeln("osu! Timing Point is not 8 parts? Skipping...");
                             continue;
                         }
+
+                        // populate a new TimingPoint
+                        // https://osu.ppy.sh/wiki/en/osu%21_File_Formats/Osu_%28file_format%29#timing-points
                         auto tp = new TimingPoint();
                         tp.time = to!int(parts[0]);
                         bool isInherited = to!double(parts[1]) >= 0;
-                        tp.beatDuration = isInherited ? to!double(parts[1]) : -1;
-                        tp.sliderSpeed = isInherited ? -1 : 100.0 / (-to!double(parts[1]));
+                        tp.beatDuration = isInherited ? to!double(parts[1]) : -1;           // rather -1 than uninitialized
+                        tp.sliderSpeed = isInherited ? -1 : 100.0 / (-to!double(parts[1])); // rather -1 than uninitialized
                         tp.meter = to!int(parts[2]);
                         tp.volume = to!int(parts[5]) / 100.0;
+
+                        // concatenation isn't super efficient, but there's no need to refactor.
                         timingPoints ~= [*tp];
                         break;
 
@@ -194,10 +232,12 @@ class OsuParser : Parser {
                             continue;
                         }
                         auto ho = new HitObject();
-                        ho.x = to!int(parts[0]) / 640.0;
-                        ho.y = to!int(parts[1]) / 480.0;
+                        ho.x = to!int(parts[0]) / 640.0; // conversion from osu!pixels to screen space
+                        ho.y = to!int(parts[1]) / 480.0; // conversion from osu!pixels to screen space
                         ho.time = to!int(parts[2]);
                         ho.type = to!int(parts[3]);
+
+                        // concatenation isn't super efficient, but there's no need to refactor.
                         hitObjects ~= [*ho];
                         break;
 

@@ -4,6 +4,8 @@ import raylib;
 import terbi.map;
 import terbi.enums;
 import terbi.parser;
+import terbi.gameObjects;
+import terbi.utils;
 
 
 class Application {

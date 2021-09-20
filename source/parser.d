@@ -75,6 +75,11 @@ class OsuParser : Parser {
 
             // for each line in the .osu file:
             for (int i = 0; i < lines.length; i++){
+                // if the line's empty, just exit
+                if (strip(lines[i]) == ""){
+                    continue;
+                }
+
                 // match if there is a new section
                 foreach (section; EnumMembers!Section) {
                     if (section == strip(lines[i])) {

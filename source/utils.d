@@ -1,5 +1,6 @@
 module terbi.utils;
 
+import std.math;
 import raylib;
 
 
@@ -21,20 +22,20 @@ struct WindowBoundingBox {
     }
 
     this(Vector2 pos1, Vector2 pos2){
-        this.x1 = pos1.x;
-        this.y1 = pos1.y;
-        this.x2 = pos2.x;
-        this.y2 = pos2.y;
+        this.x1 = cast(int) pos1.x;
+        this.y1 = cast(int) pos1.y;
+        this.x2 = cast(int) pos2.x;
+        this.y2 = cast(int) pos2.y;
 
         assert (x1 < x2);
         assert (y1 < y2);
     }
 
     this(Vector2 center, int width, int height){
-        this.x1 = center.x - width / 2;
-        this.x2 = center.x + width / 2;
-        this.y1 = center.y - height / 2;
-        this.y2 = center.y + height / 2;
+        this.x1 = cast(int) center.x - width / 2;
+        this.x2 = cast(int) center.x + width / 2;
+        this.y1 = cast(int) center.y - height / 2;
+        this.y2 = cast(int) center.y + height / 2;
 
         assert (x1 < x2);
         assert (y1 < y2);
@@ -42,22 +43,22 @@ struct WindowBoundingBox {
 
     // takes position [0, 1] and returns absolute position
     Vector2 getAbsolutePosition(Vector2 vec){
-        return new Vector2(
-            getXAbsolute(vec.x),
-            getYAbsolute(vec.y)
+        return Vector2(
+            vec.x * (x2 - x1) + x1,
+            vec.y * (y2 - y1) + y1
         );
     }
 
     // takes size [0, 1] and returns absolute size
     Vector2 getAbsoluteSize(Vector2 size){
-        return new Vector2(
-            size.x * (x2 - x1);
-            size.y * (y2 - y1);
+        return Vector2(
+            size.x * (x2 - x1),
+            size.y * (y2 - y1)
         );
     }
 
     // takes radius [0, 1] and return absolute radius based on geometric mean of X and Y
     double getAbsoluteRadius(double radius){
-        return sqrt((x2 - x1) * (y2 - y1));
+        return sqrt(cast(float) ((x2 - x1) * (y2 - y1)));
     }
 }

@@ -1,6 +1,9 @@
 # terbi
-terbi is a minimal rhythm game engine in raylib/D.
+terbi is a minimal rhythm game engine in `raylib`/D.
+
 it is still a WIP.
+
+`raylib` bindings are from [redthing1's dray](https://github.com/redthing1/dray)
 
 ### install
 requires [`dub`](https://github.com/dlang/dub) and some D compiler (I use `LDC2/LDMD2`).

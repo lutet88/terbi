@@ -2,7 +2,6 @@ module terbi.gameObjects;
 
 import raylib;
 
-import terbi.enums;
 import terbi.utils;
 
 

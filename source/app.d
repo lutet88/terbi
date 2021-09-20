@@ -2,15 +2,18 @@ import std.stdio;
 import raylib;
 
 import terbi.map;
-import terbi.enums;
 import terbi.parser;
 import terbi.gameObjects;
 import terbi.utils;
+import terbi.game;
+import terbi.games.simpleMania;
 
 
+// currently Application is just template for SinglePlayer and Application
 class Application {
     string settingsFileName;
     Map currentMap;
+    Game currentGame;
     bool mapPlaying = false;
 
     this() {
@@ -27,14 +30,20 @@ class Application {
     void loadMap(Map m){
         currentMap = m;
         mapPlaying = true;
-        SetMusicVolume(m.general.audioClip, 0.4);
-        PlayMusicStream(m.general.audioClip);
+    }
+
+    void loadGame(Game g){
+        currentGame = g;
+    }
+
+    void startGame(){
+        currentGame.start();
     }
 
     void gameLoop(){
         scope (exit) stopRaylib();
         while (!WindowShouldClose()) {
-            if (mapPlaying) UpdateMusicStream(currentMap.general.audioClip);
+            currentGame.update();
 
             BeginDrawing();
             ClearBackground(Colors.RAYWHITE);
@@ -54,8 +63,10 @@ void main()
     Application app = new Application();
     app.initRaylib();
     Map m = parseFile("hd.osu", "/home/lutet/lutetind/terbi/testmap/");
-    writeln("printing map: ");
     writeln(m);
     app.loadMap(m);
+    Game g = new SimpleManiaGame(m);
+    app.loadGame(g);
+    app.startGame();
     app.gameLoop();
 }

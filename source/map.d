@@ -1,10 +1,11 @@
 module terbi.map;
 
 import std.stdio;
+import std.container;
 import std.conv;
 import raylib;
 
-import terbi.enums;
+import terbi.utils;
 
 
 struct HitObject {
@@ -76,5 +77,90 @@ class Map {
         string difficulty = "difficulty: " ~ to!string(difficulty) ~ "\n";
         string stats = "hitobjects: " ~ to!string(hitObjects.length) ~ " timingpoints: " ~ to!string(timingPoints.length);
         return header ~ general ~ metadata ~ difficulty ~ stats;
+    }
+
+    void unload() {
+        UnloadMusicStream(general.audioClip);
+    }
+
+    // TODO: refactor getTimingPoints and getHitObjects into one binary search method with .time
+    // dunno if this is possible in D just yet...
+
+    DList!TimingPoint getTimingPoints(int start, int end) {
+        // binary search for the start timing point
+        int left = 0;
+        int right = cast(int) timingPoints.length - 1;
+        int mid;
+
+        int i = -1;
+
+        while (left <= right) {
+            mid = cast(int) (left + right) / 2;
+            if (timingPoints[mid].time < start) {
+                left = mid + 1;
+            }
+            else if (timingPoints[mid].time > start) {
+                right = mid - 1;
+            } else {
+                i = mid;
+                break;
+            }
+            // the equivalent clause of a while/else
+            if (left > right){
+                if (timingPoints[mid].time > start) {
+                    i = mid;
+                } else {
+                    i = mid + 1;
+                }
+            }
+        }
+
+        DList!TimingPoint tps = DList!TimingPoint();
+        // starting from index i, move rightwards until end time is reached
+        while (i < timingPoints.length && timingPoints[i].time <= end) {
+            tps.insertBack([timingPoints[i]]);
+            i ++;
+        }
+
+        return tps;
+    }
+
+    DList!HitObject getHitObjects(int start, int end) {
+        // binary search for the start hit object
+        int left = 0;
+        int right = cast(int) hitObjects.length - 1;
+        int mid;
+
+        int i = -1;
+
+        while (left <= right) {
+            mid = cast(int) (left + right) / 2;
+            if (hitObjects[mid].time < start) {
+                left = mid + 1;
+            }
+            else if (hitObjects[mid].time > start) {
+                right = mid - 1;
+            } else {
+                i = mid;
+                break;
+            }
+            // the equivalent clause of a while/else
+            if (left > right){
+                if (hitObjects[mid].time > start) {
+                    i = mid;
+                } else {
+                    i = mid + 1;
+                }
+            }
+        }
+
+        DList!HitObject hos = DList!HitObject();
+        // starting from index i, move rightwards until end time is reached
+        while (i < hitObjects.length && hitObjects[i].time <= end) {
+            hos.insertBack([hitObjects[i]]);
+            i ++;
+        }
+
+        return hos;
     }
 }

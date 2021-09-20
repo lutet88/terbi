@@ -18,6 +18,15 @@ mapPlayer.d     |> class MapPlayer
 
 osuParser.d     |> Map parseOsuFile(string fileName) {...
 
+### layers
+Application
+------------------
+SinglePlayer | Multiplayer
+---------------------------
+Game
+---------------------------
+
+
 
 ### flow
 
@@ -35,3 +44,18 @@ game loop:
 - Game.update() -> calls MapPlayer.query()
 - GameRenderer.render()
 
+
+### GameObjects
+need:
+- rectangle
+- circle/oval
+- sprite
+
+attr
+- x
+- y
+- xsize
+- ysize
+- render method
+
+### SimpleManiaGame

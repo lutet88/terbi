@@ -1,7 +1,66 @@
 module terbi.utils;
 
 import std.math;
+import std.stdio;
+import std.datetime;
+import std.datetime.stopwatch : StopWatch, AutoStart;
 import raylib;
+
+
+enum SourceLocation {
+    osu = "osu!",
+    quaver = "Quaver"
+};
+
+
+class MusicPlayer {
+    double volume = 0.4;
+    Music audioClip;
+
+    StopWatch sw;
+
+    this(Music music) {
+        audioClip = music;
+        SetMusicVolume(audioClip, volume);
+        sw = StopWatch(AutoStart.no);
+    }
+
+    this(Music music, double volume) {
+        this.volume = volume;
+        SetMusicVolume(audioClip, volume);
+        sw = StopWatch(AutoStart.no);
+    }
+
+    void play() {
+        PlayMusicStream(audioClip);
+        sw.reset();
+        sw.start();
+    }
+
+    double update() {
+        UpdateMusicStream(audioClip);
+        return time();
+    }
+
+    void pause() {
+        PauseMusicStream(audioClip);
+        sw.stop();
+    }
+
+    void resume() {
+        ResumeMusicStream(audioClip);
+        sw.start();
+    }
+
+    void stop() {
+        StopMusicStream(audioClip);
+    }
+
+    double time() {
+        return sw.peek().total!"usecs" / 1000;
+    }
+
+}
 
 
 struct WindowBoundingBox {

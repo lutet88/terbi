@@ -11,7 +11,7 @@ import std.traits;
 import raylib;
 
 import terbi.map;
-import terbi.enums;
+import terbi.utils;
 
 
 Map parseFile(string fileName, string outerPath) {

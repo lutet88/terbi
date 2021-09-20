@@ -6,6 +6,7 @@ import raylib;
 
 import terbi.enums;
 
+
 struct HitObject {
     double x = 0.5;
     double y = 0.5;

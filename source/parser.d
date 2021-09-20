@@ -30,10 +30,10 @@ Map parseFile(string fileName, string outerPath) {
     return p.getMap();
 }
 
-class Parser {
-    abstract void parse(string[] lines, string outerPath);
-    abstract void clearMap();
-    abstract Map getMap();
+interface Parser {
+    void parse(string[] lines, string outerPath);
+    void clearMap();
+    Map getMap();
 }
 
 class OsuParser : Parser {

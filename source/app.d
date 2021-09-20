@@ -23,7 +23,7 @@ class Application {
     void initRaylib(){
         // TODO: replace with settings
         SetTargetFPS(480);
-        InitWindow(1280, 720, "terbi");
+        InitWindow(720, 1280, "terbi");
         InitAudioDevice();
     }
 
@@ -43,11 +43,12 @@ class Application {
     void gameLoop(){
         scope (exit) stopRaylib();
         while (!WindowShouldClose()) {
+            BeginDrawing();
+
+            ClearBackground(Colors.BLACK);
+
             currentGame.update();
 
-            BeginDrawing();
-            ClearBackground(Colors.RAYWHITE);
-            DrawText("terbi", 640-50, 360, 40, Colors.ORANGE);
             EndDrawing();
         }
     }
@@ -65,7 +66,9 @@ void main()
     Map m = parseFile("hd.osu", "/home/lutet/lutetind/terbi/testmap/");
     writeln(m);
     app.loadMap(m);
-    Game g = new SimpleManiaGame(m);
+    WindowBoundingBox w = WindowBoundingBox(20, 20, 700, 1260);
+
+    Game g = new SimpleManiaGame(m, w);
     app.loadGame(g);
     app.startGame();
     app.gameLoop();

@@ -1,7 +1,9 @@
 module terbi.game;
 
+import terbi.gameObjects;
+
 
 abstract class Game {
     abstract void start();
-    abstract void update();
+    abstract GameObject[] update();
 }

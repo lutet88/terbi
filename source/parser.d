@@ -7,6 +7,7 @@ import std.string;
 import std.conv;
 import std.container;
 import std.traits;
+import std.algorithm;
 
 import raylib;
 
@@ -242,6 +243,12 @@ class OsuParser : Parser {
                         ho.time = to!int(parts[2]);
                         ho.type = to!int(parts[3]);
 
+                        // basic mapping to column based on osu!mania
+                        if (map.difficulty.keys > 0){
+                            int col = cast(int) (to!int(parts[0]) * map.difficulty.keys / 512);
+                            col = max(min(col, map.difficulty.keys - 1), 0); // pin it to [0, k)
+                            ho.column = col;
+                        }
                         // concatenation isn't super efficient, but there's no need to refactor.
                         hitObjects ~= [*ho];
                         break;

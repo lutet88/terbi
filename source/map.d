@@ -11,6 +11,7 @@ import terbi.utils;
 struct HitObject {
     double x = 0.5;
     double y = 0.5;
+    int column = -1;
     int time = 0; // milliseconds
     int type = 0;
 }
@@ -26,7 +27,7 @@ struct TimingPoint {
 struct Difficulty {
     // all values from [0,10], like osu
     double hpDrain = 7.5;
-    int keys = 4;
+    int keys = -1;
     double circleSize = 7.5;
     double accuracy = 7.5;
     double approachRate = 7.5;
@@ -86,7 +87,7 @@ class Map {
     // TODO: refactor getTimingPoints and getHitObjects into one binary search method with .time
     // dunno if this is possible in D just yet...
 
-    DList!TimingPoint getTimingPoints(int start, int end) {
+    TimingPoint[] getTimingPoints(int start, int end) {
         // binary search for the start timing point
         int left = 0;
         int right = cast(int) timingPoints.length - 1;
@@ -115,17 +116,17 @@ class Map {
             }
         }
 
-        DList!TimingPoint tps = DList!TimingPoint();
+        TimingPoint[] tps = new TimingPoint[0];
         // starting from index i, move rightwards until end time is reached
         while (i < timingPoints.length && timingPoints[i].time <= end) {
-            tps.insertBack([timingPoints[i]]);
+            tps ~= [timingPoints[i]];
             i ++;
         }
 
         return tps;
     }
 
-    DList!HitObject getHitObjects(int start, int end) {
+    HitObject[] getHitObjects(int start, int end) {
         // binary search for the start hit object
         int left = 0;
         int right = cast(int) hitObjects.length - 1;
@@ -154,10 +155,10 @@ class Map {
             }
         }
 
-        DList!HitObject hos = DList!HitObject();
+        HitObject[] hos = new HitObject[0];
         // starting from index i, move rightwards until end time is reached
         while (i < hitObjects.length && hitObjects[i].time <= end) {
-            hos.insertBack([hitObjects[i]]);
+            hos ~= [hitObjects[i]];
             i ++;
         }
 

@@ -6,6 +6,7 @@ import std.datetime;
 import std.datetime.stopwatch : StopWatch, AutoStart;
 import raylib;
 
+const int OFFSET = 0;
 
 enum SourceLocation {
     osu = "osu!",
@@ -57,7 +58,7 @@ class MusicPlayer {
     }
 
     double time() {
-        return sw.peek().total!"usecs" / 1000;
+        return sw.peek().total!"usecs" / 1000 + OFFSET; // returns ms
     }
 
 }

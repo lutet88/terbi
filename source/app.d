@@ -68,7 +68,15 @@ void main()
     app.loadMap(m);
     WindowBoundingBox w = WindowBoundingBox(20, 20, 700, 1260);
 
-    Game g = new SimpleManiaGame(m, w);
+    KeyBindings kb = KeyBindings([
+        KeyboardKey.KEY_Z,
+        KeyboardKey.KEY_X,
+        KeyboardKey.KEY_C,
+        KeyboardKey.KEY_COMMA,
+        KeyboardKey.KEY_PERIOD,
+        KeyboardKey.KEY_SLASH
+    ]);
+    Game g = new SimpleManiaGame(m, w, kb);
     app.loadGame(g);
     app.startGame();
     app.gameLoop();

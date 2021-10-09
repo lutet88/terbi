@@ -6,7 +6,6 @@ import std.datetime;
 import std.datetime.stopwatch : StopWatch, AutoStart;
 import raylib;
 
-const int OFFSET = 0;
 
 enum SourceLocation {
     osu = "osu!",
@@ -17,6 +16,8 @@ enum SourceLocation {
 class MusicPlayer {
     double volume = 0.4;
     Music audioClip;
+    double offset = 0;
+    double prevMusicTime = -0.01;
 
     StopWatch sw;
 
@@ -32,6 +33,10 @@ class MusicPlayer {
         sw = StopWatch(AutoStart.no);
     }
 
+    void setOffset(double o) {
+        offset = o;
+    }
+
     void play() {
         PlayMusicStream(audioClip);
         sw.reset();
@@ -40,6 +45,7 @@ class MusicPlayer {
 
     double update() {
         UpdateMusicStream(audioClip);
+
         return time();
     }
 
@@ -58,9 +64,18 @@ class MusicPlayer {
     }
 
     double time() {
-        return sw.peek().total!"usecs" / 1000 + OFFSET; // returns ms
-    }
+        double currentTime = sw.peek().total!"usecs" / 1000;
+        double musicTime = GetMusicTimePlayed(audioClip);
 
+        if (musicTime < prevMusicTime) {
+            writeln("Music has ended!");
+            stop();
+        }
+
+        prevMusicTime = musicTime;
+
+        return currentTime + offset;
+    }
 }
 
 
@@ -121,4 +136,9 @@ struct WindowBoundingBox {
     double getAbsoluteRadius(double radius){
         return sqrt(cast(float) ((x2 - x1) * (y2 - y1)));
     }
+}
+
+
+struct KeyBindings {
+    int[] keys;
 }

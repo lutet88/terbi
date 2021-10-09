@@ -3,6 +3,7 @@ module terbi.map;
 import std.stdio;
 import std.container;
 import std.conv;
+import std.traits;
 import raylib;
 
 import terbi.utils;
@@ -14,7 +15,22 @@ struct HitObject {
     int column = -1;
     int time = 0; // milliseconds
     int type = 0;
+    bool hit = false;
+    double hitTime = 0; // milliseconds offset
+    NoteType hitType = NoteType.NONE;
 }
+
+
+enum NoteType {
+    MARV  = 320,
+    PERF  = 300,
+    GOOD  = 200,
+    OK    = 100,
+    BAD   = 50,
+    MISS  = 0,
+    NONE  = -1
+}
+
 
 struct TimingPoint {
     int time = 0; // milliseconds
@@ -85,7 +101,7 @@ class Map {
     }
 
     // TODO: refactor getTimingPoints and getHitObjects into one binary search method with .time
-    // dunno if this is possible in D just yet...
+    // probably make a Timeable interface or something
 
     TimingPoint[] getTimingPoints(int start, int end) {
         // binary search for the start timing point
@@ -126,7 +142,7 @@ class Map {
         return tps;
     }
 
-    HitObject[] getHitObjects(int start, int end) {
+    HitObject*[] getHitObjects(int start, int end) {
         // binary search for the start hit object
         int left = 0;
         int right = cast(int) hitObjects.length - 1;
@@ -155,13 +171,50 @@ class Map {
             }
         }
 
-        HitObject[] hos = new HitObject[0];
+        HitObject*[] hos = new HitObject*[0];
         // starting from index i, move rightwards until end time is reached
         while (i < hitObjects.length && hitObjects[i].time <= end) {
-            hos ~= [hitObjects[i]];
+            hos ~= [&hitObjects[i]];
             i ++;
         }
 
         return hos;
     }
+}
+
+
+// returns two-sided accuracy timing window
+double accuracyTimingWindow(double acc, NoteType note) {
+    switch (note) {
+        case NoteType.MARV:
+            return 80 - 6 * acc;
+        case NoteType.PERF:
+            return 160 - 12 * acc;
+        case NoteType.GOOD:
+            return 240 - 18 * acc;
+        case NoteType.OK:
+            return 320 - 24 * acc;
+        case NoteType.BAD:
+            return 400 - 30 * acc;
+        case NoteType.MISS:
+            return 560 - 42 * acc;
+        case NoteType.NONE:
+            return double.max;
+        default:
+            assert(0);
+    }
+}
+
+NoteType getNoteByTiming(double acc, double offset) {
+    // absolute value
+    if (offset < 0) offset = -offset;
+
+    foreach (NoteType e; [EnumMembers!NoteType]) {
+        if (offset < accuracyTimingWindow(acc, e)) {
+            return e;
+        }
+    }
+
+    // uhh, just in case.
+    return NoteType.NONE;
 }

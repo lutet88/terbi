@@ -11,6 +11,7 @@ import terbi.map;
 import terbi.utils;
 import terbi.gameObjects;
 import terbi.input;
+import terbi.score;
 
 
 const double GAME_SPEED = 0.8; // screens per second
@@ -22,9 +23,12 @@ class SimpleManiaGame : Game {
     int keys;
     double offset = 0;
 
+    int prevMissCalculationTime = 0;
+
     WindowBoundingBox window;
     KeyBindings keybinds;
     InputHandler input;
+    Score score;
 
     this(Map map, WindowBoundingBox window, KeyBindings keybinds) {
         music = new MusicPlayer(map.general.audioClip);
@@ -32,7 +36,8 @@ class SimpleManiaGame : Game {
         this.map = map;
         this.window = window;
         this.keybinds = keybinds;
-        this.input = new InputHandler(this.keybinds.keys);
+        input = new InputHandler(this.keybinds.keys);
+        score = new Score(cast(int) map.hitObjects.length);
     }
 
     override void setOffset(int offset) {
@@ -55,7 +60,7 @@ class SimpleManiaGame : Game {
 
         HitObject*[] hitObjects = map.getHitObjects(cast(int) now, cast(int) next + 1);
         int objectCount = cast(int) hitObjects.walkLength;
-        GameObject[] objects = new GameObject[objectCount + 1 + keys];
+        GameObject[] objects = new GameObject[objectCount + keys];
 
         // object 0 through keys depict each key (whether it is pressed)
         for (int i = 0; i < keys; i++) {
@@ -82,16 +87,25 @@ class SimpleManiaGame : Game {
             objects[i].render(window);
         }
 
+        // score objects
+        GameObject scoreDisplay = new TextObject(to!string(score.getScore()), Vector2(0.5, 0.06), 56, Color(210, 210, 210, 255));
+        scoreDisplay.render(window);
+
+        GameObject accDisplay = new TextObject(to!string(score.getPercentAccuracy()), Vector2(0.5, 0.1), 28, Color(210, 210, 210, 255));
+        accDisplay.render(window);
+
         return objects;
     }
 
 
     void processInput() {
+        double timingWindow = accuracyTimingWindow(map.difficulty.accuracy, NoteType.MISS) / 2.0;
+
+        // process notes that have been hit
         while (input.hasKeyEvents()) {
             KeyEvent k = input.getKeyEvent();
 
             // find all hitObjects within miss-range of this keypress
-            double timingWindow = accuracyTimingWindow(map.difficulty.accuracy, NoteType.MISS) / 2.0;
             HitObject*[] matchingHitObjects = map.getHitObjects(
                 cast(int) (k.time - timingWindow),
                 cast(int) (k.time + timingWindow)
@@ -102,10 +116,29 @@ class SimpleManiaGame : Game {
                 ho.hit = true;
                 ho.hitTime = k.time - ho.time;
                 ho.hitType = getNoteByTiming(map.difficulty.accuracy, ho.hitTime);
-                writeln(ho.hitType);
+                score.objectHit(ho.hitType);
                 break;
             }
         }
+
+        // process notes that haven't been hit
+        int currentMissTime = cast(int) (music.time() - timingWindow);
+
+        HitObject*[] potentialMissedHitObjects = map.getHitObjects(
+                prevMissCalculationTime,
+                currentMissTime
+        );
+
+        foreach (HitObject* ho; potentialMissedHitObjects) {
+            if (!ho.hit) {
+                ho.hit = true;
+                ho.hitType = NoteType.MISS;
+                score.objectHit(NoteType.MISS);
+            }
+        }
+
+        prevMissCalculationTime = currentMissTime;
+
     }
 
 

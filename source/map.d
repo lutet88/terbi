@@ -205,6 +205,27 @@ double accuracyTimingWindow(double acc, NoteType note) {
     }
 }
 
+Color noteColor(NoteType note) {
+    switch (note) {
+        case NoteType.MARV:
+            return Color(210, 120, 240, 255);
+        case NoteType.PERF:
+            return Color(245, 193, 61, 255);
+        case NoteType.GOOD:
+            return Color(95, 219, 57, 255);
+        case NoteType.OK:
+            return Color(108, 129, 204, 255);
+        case NoteType.BAD:
+            return Color(196, 183, 159, 255);
+        case NoteType.MISS:
+            return Color(235, 66, 66, 255);
+        case NoteType.NONE:
+            return Color(0, 0, 0, 0);
+        default:
+            assert(0);
+    }
+}
+
 NoteType getNoteByTiming(double acc, double offset) {
     // absolute value
     if (offset < 0) offset = -offset;

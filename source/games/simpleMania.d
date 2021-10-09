@@ -25,6 +25,10 @@ class SimpleManiaGame : Game {
 
     int prevMissCalculationTime = 0;
 
+    // probably temporary (TODO:)
+    int prevNoteTime = -1_000_000; // placeholder
+    NoteType prevNoteType = NoteType.NONE;
+
     WindowBoundingBox window;
     KeyBindings keybinds;
     InputHandler input;
@@ -94,6 +98,13 @@ class SimpleManiaGame : Game {
         GameObject accDisplay = new TextObject(to!string(score.getPercentAccuracy()), Vector2(0.5, 0.1), 28, Color(210, 210, 210, 255));
         accDisplay.render(window);
 
+        // temporary: latest note
+        if (prevNoteTime + 300 > music.time()) {
+            // show note type text
+            GameObject latestNoteDisplay = new TextObject(to!string(prevNoteType), Vector2(0.5, 0.3), 48, noteColor(prevNoteType));
+            latestNoteDisplay.render(window);
+        }
+
         return objects;
     }
 
@@ -117,6 +128,8 @@ class SimpleManiaGame : Game {
                 ho.hitTime = k.time - ho.time;
                 ho.hitType = getNoteByTiming(map.difficulty.accuracy, ho.hitTime);
                 score.objectHit(ho.hitType);
+                prevNoteTime = cast(int) k.time;
+                prevNoteType = ho.hitType;
                 break;
             }
         }
@@ -134,6 +147,8 @@ class SimpleManiaGame : Game {
                 ho.hit = true;
                 ho.hitType = NoteType.MISS;
                 score.objectHit(NoteType.MISS);
+                prevNoteTime = cast(int) music.time();
+                prevNoteType = NoteType.MISS;
             }
         }
 

@@ -28,6 +28,7 @@ class InputHandler {
     KeyState[] keyStates;
     double prevUpdateTime;
     DList!KeyEvent keyEvents;
+    double inputOffset = 0;
 
     this(int[] keys) {
         this.keyStates = new KeyState[keys.length];
@@ -38,7 +39,7 @@ class InputHandler {
     }
 
     void update(double now) {
-        double betweenTime = (prevUpdateTime + now) / 2.0;
+        double betweenTime = (prevUpdateTime + now) / 2.0 - inputOffset;
 
         // Note for this section:
         // Input is highly framerate-dependent.
@@ -56,6 +57,10 @@ class InputHandler {
             }
         }
         prevUpdateTime = now;
+    }
+
+    void setOffset(double offset) {
+        inputOffset = offset;
     }
 
     bool isPressed(int key) {

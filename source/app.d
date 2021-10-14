@@ -63,18 +63,18 @@ void main()
 {
     Application app = new Application();
     app.initRaylib();
-    Map m = parseFile("hd.osu", "/home/lutet/lutetind/terbi/testmap/");
+    Map m = parseFile("present.osu", "/home/lutet/lutetind/terbi/izana/");
     writeln(m);
     app.loadMap(m);
     WindowBoundingBox w = WindowBoundingBox(20, 20, 700, 1260);
 
     KeyBindings kb = KeyBindings([
-        KeyboardKey.KEY_Z,
+        //KeyboardKey.KEY_Z,
         KeyboardKey.KEY_X,
         KeyboardKey.KEY_C,
         KeyboardKey.KEY_COMMA,
         KeyboardKey.KEY_PERIOD,
-        KeyboardKey.KEY_SLASH
+        //KeyboardKey.KEY_SLASH
     ]);
     Game g = new SimpleManiaGame(m, w, kb);
     app.loadGame(g);

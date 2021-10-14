@@ -14,9 +14,9 @@ enum SourceLocation {
 
 
 class MusicPlayer {
-    double volume = 0.4;
+    double volume = 0.2;
     Music audioClip;
-    double offset = 0;
+    double offset = 100;
     double prevMusicTime = -0.01;
 
     StopWatch sw;
@@ -74,7 +74,11 @@ class MusicPlayer {
 
         prevMusicTime = musicTime;
 
-        return currentTime + offset;
+        return currentTime;
+    }
+
+    double inputTime() {
+        return time() - offset;
     }
 }
 

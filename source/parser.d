@@ -103,9 +103,8 @@ class OsuParser : Parser {
                         // match parts[0] as key, assign values to the Map
                         switch (parts[0]) {
                             case "AudioFilename":
-                                map.general.audioClip = LoadMusicStream(
-                                        cast(immutable char*)(outerPath ~ value).idup
-                                );
+                                immutable char* path = cast(immutable char*) (outerPath ~ value ~ "\0");
+                                map.general.audioClip = LoadMusicStream(path);
                                 map.general.initialized = true;
                                 break;
                             case "AudioLeadIn":

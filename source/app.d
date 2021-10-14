@@ -63,7 +63,7 @@ void main()
 {
     Application app = new Application();
     app.initRaylib();
-    Map m = parseFile("present.osu", "/home/lutet/lutetind/terbi/izana/");
+    Map m = parseFile("present.osu", "/home/lutet/lutetind/terbi/maps/izana/");
     writeln(m);
     app.loadMap(m);
     WindowBoundingBox w = WindowBoundingBox(20, 20, 700, 1260);
@@ -77,6 +77,7 @@ void main()
         //KeyboardKey.KEY_SLASH
     ]);
     Game g = new SimpleManiaGame(m, w, kb);
+    g.setOffset(60);
     app.loadGame(g);
     app.startGame();
     app.gameLoop();

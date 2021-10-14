@@ -36,19 +36,19 @@ class SimpleManiaGame : Game {
 
     this(Map map, WindowBoundingBox window, KeyBindings keybinds) {
         music = new MusicPlayer(map.general.audioClip);
-        music.setOffset(60);
         keys = map.difficulty.keys;
         this.map = map;
         this.window = window;
         this.keybinds = keybinds;
         input = new InputHandler(this.keybinds.keys);
-        input.setOffset(60);
         score = new BasicScore(cast(int) map.hitObjects.length, map.difficulty.accuracy);
     }
 
     override void setOffset(int offset) {
         // offset in milliseconds
         this.offset = offset;
+        music.setOffset(offset);
+        input.setOffset(offset);
     }
 
     override void start() {
